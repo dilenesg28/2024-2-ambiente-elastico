@@ -1,61 +1,89 @@
-# Variables
-variable "access_key" {
-    description = "Access key to AWS console"
-}
-variable "secret_key" {
-    description = "Secret key to AWS console"
-}
+# variables.tf
 
-variable "session_token" {
-    description = "Session token to AWS console"
-}
-
-
+# Região da AWS
 variable "region" {
-  description = "AWS deployment region"
+  description = "Região da AWS onde os recursos serão criados"
   type        = string
-  default     = "us-east-1"
+  default     = "us-east-1" # Alterar conforme necessário
 }
 
-variable "vpc_cidr_block" {
-  description = "VPC IPv4 CIDR block"
+# Chave de Acesso AWS
+variable "access_key" {
+  description = "Chave de acesso da AWS"
   type        = string
-  default     = "10.0.0.0/16"
+  sensitive   = true
+}
+
+# Chave Secreta AWS
+variable "secret_key" {
+  description = "Chave secreta da AWS"
+  type        = string
+  sensitive   = true
+}
+
+# Token de Sessão AWS (para credenciais temporárias)
+variable "session_token" {
+  description = "Token de sessão da AWS para credenciais temporárias"
+  type        = string
+  sensitive   = true
+}
+
+
+variable "vpc_cidr" {
+  description = "CIDR da VPC"
+  type        = string
+  default = "10.0.0.0/16"
+
 }
 
 variable "public_subnet_cidr" {
-  description = "Public Subnet cidr block"
+  description = "CIDR das Subnets Públicas"
   type        = list(string)
   default     = ["10.0.1.0/24", "10.0.2.0/24"]
 }
 
 variable "private_subnet_cidr" {
-  description = "Private Subnet cidr block"
+  description = "CIDR das Subnets Privadas"
   type        = list(string)
   default     = ["10.0.3.0/24", "10.0.4.0/24"]
 }
 
 variable "AZ" {
-  description = "Availability Zones of Resources"
+  description = "Zonas de Disponibilidade"
   type        = list(string)
   default     = ["us-east-1a", "us-east-1b"]
 }
 
-variable "db_name" {
-  description = "The database name"
+variable "ami" {
+  description = "AMI ID para as instâncias EC2"
   type        = string
-  default     = "TF_DB"
+  default     = "ami-0c94855ba95c71c99"
 }
 
-variable "db_username" {
-  description = "The master username for the database"
+variable "instance_type" {
+  description = "Tipo da instância EC2"
   type        = string
-  default     = "user"
+  default     = "t2.micro"
 }
 
-variable "db_password" {
-  description = "Password for the master DB user"
+variable "user_data" {
+  description = "Script de inicialização para as instâncias EC2"
   type        = string
-  sensitive   = true
-  default     = "password"
+  default     = <<-EOF
+                #!/bin/bash
+                # Atualizar todos os pacotes instalados
+                yum update -y
+
+                # Instalar o Nginx
+                amazon-linux-extras install nginx1 -y
+
+                # Iniciar o serviço Nginx
+                systemctl start nginx
+
+                # Habilitar o Nginx para iniciar no boot
+                systemctl enable nginx
+
+                # Criar uma página inicial personalizada (opcional)
+                echo "<h1>Bem-vindo ao Nginx no Amazon Linux 2!</h1>" > /usr/share/nginx/html/index.html
+                EOF
 }
