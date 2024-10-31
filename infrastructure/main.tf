@@ -6,7 +6,7 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = ">= 4.0"  # Certifique-se de que a versão é 4.0 ou superior
+      version = ">= 4.0" # Certifique-se de que a versão é 4.0 ou superior
     }
   }
 }
@@ -75,4 +75,13 @@ module "ec2" {
   tags = {
     Environment = "Production"
   }
+}
+module "rds" {
+  source               = "./modules/rds"
+  db_name              = "mydb"
+  db_username          = "admin"
+  db_password          = "password123"  # Substitua por uma variável segura em produção
+  security_group_id    = module.security_groups.rds_sg_id  # Ou ajuste com o ID correto do SG
+  db_subnet_group_name = "db-subnet-group"
+  private_subnet_ids   = module.vpc.private_subnet_ids
 }
