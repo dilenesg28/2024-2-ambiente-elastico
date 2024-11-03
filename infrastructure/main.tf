@@ -16,7 +16,7 @@ provider "aws" {
   region     = var.region
   access_key = var.access_key
   secret_key = var.secret_key
-  token      = var.session_token
+
 }
 
 
@@ -76,12 +76,46 @@ module "ec2" {
     Environment = "Production"
   }
 }
+#module "rds" {
+  #source      = "./modules/rds"
+  #region      = var.region       # Certifique-se de que var.region está definido
+  #access_key  = var.access_key   # Certifique-se de que var.access_key está definido
+  #secret_key  = var.secret_key   # Certifique-se de que var.secret_key está definido
+  #engine               = "mysql"
+  #identifier           = "myrdsinstance"
+  #allocated_storage    =  20
+  #engine_version       = "8.0.35"
+  #instance_class       = "db.t3.micro"
+  #username             = "usradmin"
+  #password             = "S3nhaSup34S3gura"
+  #parameter_group_name = "default.mysql8.0"
+  #vpc_security_group_ids = ["${aws_security_group.rds_sg.id}"]
+  #skip_final_snapshot  = true
+  #publicly_accessible =  true
+  
+#}
+
 module "rds" {
   source               = "./modules/rds"
-  db_name              = "mydb"
-  db_username          = "admin"
-  db_password          = "password123"  # Substitua por uma variável segura em produção
-  security_group_id    = module.security_groups.rds_sg_id  # Ou ajuste com o ID correto do SG
-  db_subnet_group_name = "db-subnet-group"
-  private_subnet_ids   = module.vpc.private_subnet_ids
+  engine               = "postgres"
+  engine_version       = "13.3"
+  instance_class       = "db.t3.micro"
+
+  allocated_storage  = 20  # especifique o tamanho do armazenamento em GB
+  identifier         = "meu-banco"                  # identificador único para a instância do DB
+
+  region     = var.region # região da AWS
+  access_key = var.access_key
+  secret_key = var.secret_key
+
+
+  username             = "usradmin"
+  password             = "S3nhaSup34S3gura"
+  parameter_group_name = "default.postgres13"
+  vpc_security_group_ids = [module.security_groups.webtier_sg_id]
+  publicly_accessible  = false
+  skip_final_snapshot  = true
 }
+
+                         
+  

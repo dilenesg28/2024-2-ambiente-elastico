@@ -87,3 +87,25 @@ variable "user_data" {
                 echo "<h1>Bem-vindo ao Nginx no Amazon Linux 2!</h1>" > /usr/share/nginx/html/index.html
                 EOF
 }
+
+variable "instance_class" {
+  description = "Class of the RDS instance"
+  type        = string
+  default     = "db.t3.micro"
+}
+
+variable "username" {
+  description = "Username for the RDS"
+  type        = string
+}
+
+variable "password" {
+  description = "Password for the RDS"
+  type        = string
+}
+
+variable "parameter_group_name" {
+  description = "Parameter group name for the RDS"
+  type        = string
+  default     = "default.postgres13"
+}
